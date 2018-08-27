@@ -100,10 +100,6 @@ const businessId = req.params.id.substring(1);
 
 })
 
-app.listen(5000, function(){
-
-	console.log("Server Running");
-})
 
 
 function bestValue (results) {
@@ -116,8 +112,12 @@ function bestValue (results) {
 
          for (var j = 0; j < results.length -1 -i; j++) {
 
+          var weight_first = price_weight(results[j].price)
 
-              if((results[j].price.length + results[j].rating)/2 < (results[j+1].price.length + results[j+1].rating)/2 ) {
+          var weight_last = price_weight(results[j+1].price)
+
+
+              if((weight_first + results[j].rating)/2 < (weight_last + results[j+1].rating)/2 ) {
                             
                             const lesserValue = results[j]
 
@@ -133,7 +133,39 @@ function bestValue (results) {
   
   return results
  
- }
+}
+
+
+function price_weight (price) {
+
+    if (price.length === 1) return 5
+
+      if(price.length === 2) return 4
+
+        if(price.length === 3) return 3
+
+          if (price.length === 4) return 2
+
+            if(price.length === 5) return 1
+
+
+}
+
+
+app.listen(process.env.PORT || 5000, function(){
+
+  console.log("Server Running");
+})
+
+
+
+
+
+
+
+
+
+
 
 
 
