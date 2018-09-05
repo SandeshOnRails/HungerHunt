@@ -32,54 +32,53 @@ const client = yelp.client(apiKey);
 
 
 app.get("/", function(req, res){
-	res.render("index");
+  res.render("index");
 })
 
 app.post("/search", function(req, res){
 
-	
+  
 
     let food = req.body.food;
     let loc = req.body.city + ", " + req.body.state;
 
      data = {
 
-    	term: food,
-    	location: loc
+      term: food,
+      location: loc
 
     };
 
-	client.search(data).then(function(response){
-		
-		let results = response.jsonBody.businesses;
+  client.search(data).then(function(response){
+    
+    let results = response.jsonBody.businesses;
      
-     console.log(typeof response.jsonBody.businesses[0].price)
-    console.log(typeof response.jsonBody.businesses[0].rating)
+   
+  var filtered_results = filter_prices(results)
 
-    var sorted_results = bestValue(results)
+    var sorted_results = bestValue(filtered_results)
 
 
     for (var i =0; i < sorted_results.length; i++){
 
       console.log(sorted_results[i].name)
 
-          console.log(sorted_results[i].price)
-
-          console.log(sorted_results[i].rating)
+          
+          
     }
 
 
-	    res.render("results", {results: sorted_results});
+      res.render("results", {results: sorted_results});
 
-	}).catch(function(err){
-	console.log(err);
+  }).catch(function(err){
+  console.log(err);
 })
 
 })
   
 app.get("/search/reviews/:id", function(req, res){
 
-	
+  
 const businessId = req.params.id.substring(1);
 
 //console.log(req.params.id);
@@ -95,10 +94,11 @@ const businessId = req.params.id.substring(1);
       res.render("reviews.ejs", {revs: revs});
  })
  .catch(function(err){
- 	console.log(err);
+  console.log(err);
  })
 
 })
+
 
 
 
@@ -107,10 +107,13 @@ function bestValue (results) {
         for(var i = 0; i < results.length; i ++ ) {
                
 
-               console.log(results[i].price)
-               console.log(results[i].rating)
+              
 
          for (var j = 0; j < results.length -1 -i; j++) {
+
+          console.log(results[j].price)
+          console.log(results[j+1].price)
+                 
 
           var weight_first = price_weight(results[j].price)
 
@@ -151,27 +154,24 @@ function price_weight (price) {
 
 }
 
+function filter_prices (results) {
+    
+    for (let i =0; i < results.length; i++) {
+
+          if(!results[i].price) {
+
+               results.splice(i, 1)
+          }
+    }
+
+    return results
+
+}
 
 app.listen(process.env.PORT || 5000, function(){
 
   console.log("Server Running");
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
